@@ -17,6 +17,7 @@ Outil principal : `~/.claude/skills/image-processing/scripts/imgtool.py`
 
 - Pillow : obligatoire.
 - rembg : uniquement pour le détourage. Installation : `pip install "rembg[cpu]"`. Au premier usage, il télécharge un modèle d'environ 170 Mo dans `~/.u2net`.
+- Upscale IA : `pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu && pip install spandrel`. Le modèle (64 Mo) se télécharge au premier usage.
 - ImageMagick : facultatif, pour les cas avancés (voir plus bas). Commande `magick` en v7 ou `convert` en v6.
 
 Si un module manque, installe-le avec pip, puis relance la commande.
@@ -25,6 +26,7 @@ Si un module manque, installe-le avec pip, puis relance la commande.
 
 | Besoin | Commande |
 |---|---|
+| **Agrandir x4 par IA** (photo trop petite pour l'impression) | `python3 T upscale photo.jpg --format png` : Real-ESRGAN, environ 7 min par photo de 1000 px sur CPU ; lance-le en tâche de fond |
 | Infos (taille, format, poids) | `python3 T info photo.jpg` |
 | Redimensionner, ratio conservé | `python3 T resize photo.jpg 1920x` (largeur), `x1080` (hauteur), `1200x1200` (dans la boîte), `50%` |
 | Taille exacte, recadrée | `python3 T resize photo.jpg 1080x1350 --mode cover --focus haut` |

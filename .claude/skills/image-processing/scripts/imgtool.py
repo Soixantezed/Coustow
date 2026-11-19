@@ -352,6 +352,58 @@ def cmd_social(args):
             save(res, out_path(f, args, t, ext), args.quality)
 
 
+
+SR_URL = "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth"
+SR_PATH = Path.home() / ".cache" / "sr" / "RealESRGAN_x4plus.pth"
+
+
+def _sr_model():
+    try:
+        import torch
+        from spandrel import ModelLoader
+    except ImportError:
+        die("upscale IA : pip install torch --index-url https://download.pytorch.org/whl/cpu && pip install spandrel")
+    if not SR_PATH.exists():
+        import urllib.request
+        SR_PATH.parent.mkdir(parents=True, exist_ok=True)
+        print("Téléchargement du modèle Real-ESRGAN (64 Mo)…", file=sys.stderr)
+        urllib.request.urlretrieve(SR_URL, SR_PATH)
+    torch.set_num_threads(max(1, __import__("os").cpu_count() or 1))
+    return torch, ModelLoader().load_from_file(str(SR_PATH)).eval()
+
+
+def _sr_run(torch, model, rgb, tile=256, pad=16):
+    import numpy as np
+    arr = np.asarray(rgb, dtype=np.float32) / 255.0
+    h, w, _ = arr.shape
+    s = model.scale
+    out = np.zeros((h * s, w * s, 3), dtype=np.float32)
+    with torch.no_grad():
+        for y in range(0, h, tile):
+            for x in range(0, w, tile):
+                y0, x0 = max(0, y - pad), max(0, x - pad)
+                y1, x1 = min(h, y + tile + pad), min(w, x + tile + pad)
+                t = torch.from_numpy(arr[y0:y1, x0:x1].transpose(2, 0, 1)).unsqueeze(0)
+                r = model(t).squeeze(0).clamp(0, 1).numpy().transpose(1, 2, 0)
+                ty, tx = (y - y0) * s, (x - x0) * s
+                th, tw = (min(y + tile, h) - y) * s, (min(x + tile, w) - x) * s
+                out[y * s:y * s + th, x * s:x * s + tw] = r[ty:ty + th, tx:tx + tw]
+    return Image.fromarray((out * 255 + 0.5).astype("uint8"))
+
+
+def cmd_upscale(args):
+    torch, model = _sr_model()
+    for f in args._inputs:
+        im = open_img(f)
+        alpha = im.getchannel("A") if im.mode in ("RGBA", "LA") else None
+        big = _sr_run(torch, model, im.convert("RGB"))
+        if alpha:
+            big.putalpha(alpha.resize(big.size, Image.LANCZOS))
+        if args.scale != 4:
+            big = big.resize((round(im.width * args.scale), round(im.height * args.scale)), Image.LANCZOS)
+        ext = None if alpha is None else "png"
+        save(big, out_path(f, args, f"x{args.scale:g}", ext), args.quality)
+
 # ---------- CLI ----------
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -422,6 +474,11 @@ def main():
     s.add_argument("--opacity", type=float, default=0.8)
     s.add_argument("--rotate", type=float, default=0)
     s.add_argument("--format")
+
+    s = p("upscale", cmd_upscale, "agrandir x2-x4 par IA (Real-ESRGAN) : netteté pour l'impression")
+    s.add_argument("--scale", type=float, default=4, help="facteur final (le modèle fait x4, puis ajuste)")
+    s.add_argument("--format")
+    s.set_defaults(quality=95)
 
     s = p("social", cmd_social, "formats réseaux sociaux")
     s.add_argument("--preset", nargs="+", required=True, help=f"{', '.join(SOCIAL)} ou 'tous'")

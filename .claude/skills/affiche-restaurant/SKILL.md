@@ -43,6 +43,7 @@ Voir `references/copywriting.md`. Recommande-en une. Si l'utilisateur a dit « f
 ### 3. Visuel
 - **Vraie photo** : améliore-la avec `imagegen.py edit`, par exemple « rends la lumière plus chaude et appétissante, fond flou, garde le plat strictement identique ». Ou détoure-la avec `imgtool.py removebg` puis pose-la sur un fond généré.
 - **Visuel IA** : écris le prompt avec la formule de `references/photo-food.md`. Choisis le format selon le support (`portrait` pour l'affiche et la story, `carre` pour le post) et **réserve l'espace du texte** dans la composition (« espace vide en bas du cadre », « plat dans le tiers supérieur »…).
+- **Qualité d'impression** : une photo de moins de 2000 px sur son grand côté est trop petite pour un A4 à 300 dpi. Agrandis-la d'abord avec `imgtool.py upscale photo.jpg --format png` (Real-ESRGAN x4, environ 7 min sur CPU, en tâche de fond) et utilise des PNG, pas des JPG, pour les fonds intermédiaires.
 - Termine **toujours** le prompt par : `no text, no letters, no logo, no watermark`.
 - Regarde l'image (outil Read) avant de continuer. Si le plat n'a pas l'air appétissant, régénère. Un visuel moyen tue l'affiche.
 
