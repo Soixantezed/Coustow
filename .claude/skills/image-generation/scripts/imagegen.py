@@ -101,7 +101,7 @@ def openai_key():
 
 
 def openai_model(args):
-    return args.model or os.environ.get("OPENAI_IMAGE_MODEL", "gpt-image-1")
+    return args.model or os.environ.get("OPENAI_IMAGE_MODEL", "gpt-image-2")
 
 
 def openai_blobs(js, output_format):
@@ -124,7 +124,7 @@ def openai_generate(args, fmt):
         "size": FORMATS[fmt][0],
         "n": args.n,
     }
-    if payload["model"].startswith("gpt-image"):
+    if not payload["model"].startswith("dall-e"):
         payload["quality"] = args.quality
         payload["output_format"] = args.output_format
         if args.background:
@@ -139,7 +139,7 @@ def openai_generate(args, fmt):
 def openai_edit(args, fmt):
     model = openai_model(args)
     data = {"model": model, "prompt": args.prompt, "size": FORMATS[fmt][0], "n": str(args.n)}
-    if model.startswith("gpt-image"):
+    if not model.startswith("dall-e"):
         data["quality"] = args.quality
         data["output_format"] = args.output_format
         if args.background:

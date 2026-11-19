@@ -14,7 +14,7 @@ Tout passe par un seul script : `~/.claude/skills/image-generation/scripts/image
 - **Gemini** (optionnel) : variable `GEMINI_API_KEY` (ou `GOOGLE_API_KEY`), avec `--provider gemini`.
 - Le script choisit OpenAI si sa clé existe, sinon Gemini. Si aucune clé n'est définie, il s'arrête avec un message clair :
   dis à l'utilisateur quelle variable définir. Ne demande jamais de coller la clé dans le chat.
-- Modèles par défaut : `gpt-image-1` (OpenAI) et `gemini-2.5-flash-image` (Gemini).
+- Modèles par défaut : `gpt-image-2` (OpenAI ; `gpt-image-1` a été retiré) et `gemini-2.5-flash-image` (Gemini).
   Change-les avec `--model`, ou avec les variables `OPENAI_IMAGE_MODEL` / `GEMINI_IMAGE_MODEL`.
 
 ## Générer une image à partir d'un texte
