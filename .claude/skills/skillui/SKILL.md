@@ -30,7 +30,7 @@ Le mode ultra a besoin de Playwright ; s'il manque : `npm install playwright && 
 
 ## Utiliser le résultat
 
-1. Lire le `SKILL.md` et le `CLAUDE.md` générés dans le dossier de sortie (ex. `notion-design/`),
+1. La sortie est créée dans `<nom>-design/` (ex. `notion-design/`) sous `--out`. Y lire `SKILL.md`, `CLAUDE.md` et `DESIGN.md`,
    puis les fichiers de tokens et les captures d'écran.
 2. Construire l'UI demandée en respectant strictement les couleurs, polices, espacements,
    rayons, ombres et animations extraits.
